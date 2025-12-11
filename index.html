@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OmniCorp Enterprise 9000</title>
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --primary: #3b82f6;
+            --accent: #8b5cf6;
+            --success: #10b981;
+            --danger: #ef4444;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --sidebar-width: 260px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            overflow-x: hidden;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: #0f172a;
+            border-right: 1px solid #334155;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100%;
+            z-index: 10;
+            transition: transform 0.3s ease;
+        }
+
+        .logo {
+            padding: 20px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border-bottom: 1px solid #334155;
+        }
+
+        .menu {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px 0;
+        }
+
+        .menu-category {
+            padding: 15px 20px 5px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .menu-item {
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: background 0.2s;
+            color: var(--text-main);
+            text-decoration: none;
+            border-left: 3px solid transparent;
+        }
+
+        .menu-item:hover {
+            background-color: rgba(59, 130, 246, 0.1);
+            border-left-color: var(--primary);
+        }
+
+        .menu-item span {
+            margin-left: 10px;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            padding: 20px;
+            transition: margin-left 0.3s ease;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            background: var(--bg-card);
+            padding: 15px 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-bar {
+            background: var(--bg-dark);
+            border: 1px solid #334155;
+            padding: 8px 15px;
+            border-radius: 6px;
+            color: white;
+            width: 300px;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(to right, var(--success), var(--primary));
+        }
+
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background-color: var(--bg-card);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid #334155;
+            transition: transform 0.2s;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            border-color: var(--primary);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+        }
+
+        .card-title {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .big-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .trend {
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .trend.up { color: var(--success); }
+        .trend.down { color: var(--danger); }
+
+        /* Fake Chart Styles */
+        .fake-chart-bars {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            height: 60px;
+            margin-top: 15px;
+            gap: 5px;
+        }
+        .bar {
+            width: 100%;
+            background: var(--primary);
+            opacity: 0.7;
+            border-radius: 2px;
+            animation: bounce 2s infinite ease-in-out alternate;
+        }
+
+        @keyframes bounce {
+            0% { transform: scaleY(0.8); }
+            100% { transform: scaleY(1.2); }
+        }
+
+        /* Fake Table */
+        .table-responsive {
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+        th { text-align: left; color: var(--text-muted); padding: 10px; border-bottom: 1px solid #334155; }
+        td { padding: 10px; border-bottom: 1px solid #334155; }
+        tr:hover td { background-color: #334155; }
+
+        /* BSOD Overlay */
+        #bsod {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #0078d7; /* Classic Blue */
+            color: white;
+            z-index: 9999;
+            padding: 10% 15%;
+            font-family: 'Courier New', Courier, monospace;
+            cursor: pointer;
+        }
+
+        .bsod-face {
+            font-size: 100px;
+            margin-bottom: 40px;
+        }
+
+        .bsod-text {
+            font-size: 1.5rem;
+            line-height: 1.5;
+            margin-bottom: 30px;
+        }
+
+        .bsod-code {
+            font-size: 1rem;
+            opacity: 0.8;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .menu-toggle {
+                display: block;
+                font-size: 1.5rem;
+                cursor: pointer;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="sidebar">
+        <div class="logo">OMNICORP ERP</div>
+        <div class="menu">
+            <div class="menu-category">核心管理</div>
+            <div class="menu-item trigger-bug">📊 全局戰情中心</div>
+            <div class="menu-item trigger-bug">🤖 AI 協同預測</div>
+            <div class="menu-item trigger-bug">🔗 區塊鏈供應鏈</div>
+            
+            <div class="menu-category">財務與人力</div>
+            <div class="menu-item trigger-bug">💰 量子財務報表</div>
+            <div class="menu-item trigger-bug">👥 人力資源神經網</div>
+            <div class="menu-item trigger-bug">🧾 虛擬發票核銷</div>
+
+            <div class="menu-category">系統設定</div>
+            <div class="menu-item trigger-bug">⚙️ 核心超頻設定</div>
+            <div class="menu-item trigger-bug">🔒 資訊安全圍籬</div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <header class="header">
+            <div style="display:flex; align-items:center; gap:15px;">
+                <div class="trigger-bug" style="font-size:24px; display:none;" id="mobile-toggle">☰</div>
+                <input type="text" class="search-bar trigger-bug" placeholder="搜尋全域數據庫 (SQL Injection Safe)...">
+            </div>
+            <div class="user-profile trigger-bug">
+                <div style="text-align: right;">
+                    <div style="font-weight:bold;">Admin_001</div>
+                    <div style="font-size:0.8rem; color:var(--text-muted);">Root Access</div>
+                </div>
+                <div class="avatar"></div>
+            </div>
+        </header>
+
+        <div class="dashboard-grid">
+            
+            <div class="card trigger-bug">
+                <div class="card-title">
+                    <span>即時營收流 (Revenue Stream)</span>
+                    <span>USD</span>
+                </div>
+                <div class="big-number">$9,872,441</div>
+                <div class="trend up">▲ 124% 較上微秒</div>
+                <div class="fake-chart-bars">
+                    <div class="bar" style="height: 40%"></div>
+                    <div class="bar" style="height: 70%"></div>
+                    <div class="bar" style="height: 50%"></div>
+                    <div class="bar" style="height: 90%"></div>
+                    <div class="bar" style="height: 60%"></div>
+                    <div class="bar" style="height: 80%"></div>
+                </div>
+            </div>
+
+            <div class="card trigger-bug">
+                <div class="card-title">
+                    <span>伺服器負載 (Core Heat)</span>
+                    <span>CPU</span>
+                </div>
+                <div class="big-number">98.9%</div>
+                <div class="trend down">▼ 危險邊緣</div>
+                <div style="width:100%; height:10px; background:#334155; border-radius:5px; margin-top:20px;">
+                    <div style="width:90%; height:100%; background:var(--danger); border-radius:5px; animation: pulse 1s infinite;"></div>
+                </div>
+            </div>
+
+            <div class="card trigger-bug">
+                <div class="card-title">
+                    <span>在線員工 (Active Drones)</span>
+                    <span>Real-time</span>
+                </div>
+                <div class="big-number">4,206</div>
+                <div class="trend up">▲ 正在偷懶: 0%</div>
+                <div class="fake-chart-bars">
+                    <div class="bar" style="background:var(--accent); height: 30%"></div>
+                    <div class="bar" style="background:var(--accent); height: 50%"></div>
+                    <div class="bar" style="background:var(--accent); height: 40%"></div>
+                    <div class="bar" style="background:var(--accent); height: 70%"></div>
+                    <div class="bar" style="background:var(--accent); height: 60%"></div>
+                </div>
+            </div>
+
+            <div class="card trigger-bug" style="grid-column: 1 / -1;">
+                <div class="card-title">
+                    <span>近期交易異常監控 (Anomaly Detection)</span>
+                    <button style="background:var(--primary); border:none; color:white; padding:5px 10px; border-radius:4px;">匯出報表</button>
+                </div>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>交易 ID</th>
+                                <th>來源節點</th>
+                                <th>目標節點</th>
+                                <th>加密雜湊 (Hash)</th>
+                                <th>狀態</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>#TRX-9982</td>
+                                <td>Alpha Sector</td>
+                                <td>Bravo Grid</td>
+                                <td>0x4e...2a91</td>
+                                <td style="color:var(--success)">已清洗</td>
+                            </tr>
+                            <tr>
+                                <td>#TRX-9983</td>
+                                <td>Lunar Base</td>
+                                <td>Mars Colony</td>
+                                <td>0x1b...9f88</td>
+                                <td style="color:var(--accent)">處理中...</td>
+                            </tr>
+                             <tr>
+                                <td>#TRX-9984</td>
+                                <td>Deep Sea Server</td>
+                                <td>Cloud 9</td>
+                                <td>0xff...error</td>
+                                <td style="color:var(--danger)">攔截失敗</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+             <div class="card trigger-bug" style="grid-column: span 2;">
+                <div class="card-title">
+                    <span>全球威脅熱點 (Global Threat Heatmap)</span>
+                </div>
+                <div style="width:100%; height:200px; background:#111; display:flex; justify-content:center; align-items:center; color:#333; font-weight:bold; position:relative; overflow:hidden;">
+                    [ 正在載入高解析度衛星雲圖... ]
+                    <div style="position:absolute; top:20%; left:30%; width:10px; height:10px; background:red; border-radius:50%; box-shadow:0 0 10px red; animation:pulse 2s infinite;"></div>
+                    <div style="position:absolute; top:60%; left:70%; width:10px; height:10px; background:red; border-radius:50%; box-shadow:0 0 10px red; animation:pulse 1.5s infinite;"></div>
+                     <div style="position:absolute; top:40%; left:50%; width:10px; height:10px; background:red; border-radius:50%; box-shadow:0 0 10px red; animation:pulse 1s infinite;"></div>
+                </div>
+            </div>
+
+            <div class="card trigger-bug">
+                <div class="card-title">系統自毀倒數</div>
+                <div class="big-number" style="color:var(--danger)">999+ 天</div>
+                <p style="font-size:0.8rem; color:var(--text-muted)">安全協議: 已覆寫</p>
+                <button style="width:100%; margin-top:15px; padding:10px; background:var(--danger); color:white; border:none; border-radius:6px; cursor:pointer;">立即終止</button>
+            </div>
+
+        </div>
+    </main>
+
+    <div id="bsod">
+        <div class="bsod-face">:(</div>
+        <div class="bsod-text">
+            您的電腦發生問題，因此必須重新啟動。<br>
+            我們正在收集錯誤資訊，接著我們會為您重新啟動。<br>
+            <span style="font-size:1rem; display:block; margin-top:20px;">完成: <span id="percent">0</span>%</span>
+        </div>
+        <div class="bsod-code">
+            <br><br>
+            終止代碼: CRITICAL_PROCESS_DIED<br>
+            錯誤模組: ERP_LOGIC_NOT_FOUND.sys<br>
+            <br>
+            <span style="font-size:0.8rem; color:#ccc;">(點擊畫面任何地方以「強制重開機」並恢復工作)</span>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const bugs = document.querySelectorAll('.trigger-bug');
+        const bsod = document.getElementById('bsod');
+        const percentSpan = document.getElementById('percent');
+        const mobileToggle = document.getElementById('mobile-toggle');
+        const sidebar = document.querySelector('.sidebar');
+
+        // Check if mobile to show toggle
+        if(window.innerWidth <= 768) {
+            mobileToggle.style.display = 'block';
+        }
+
+        // Mobile sidebar toggle
+        mobileToggle.addEventListener('click', (e) => {
+            // This is a "feature", so it should bug out too, 
+            // but let's let it open sidebar first then crash? 
+            // No, client said "Anything you click pops up a bug".
+            // So we default to crash logic below.
+        });
+
+        // Bug Trigger Logic
+        bugs.forEach(element => {
+            element.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                triggerBSOD();
+            });
+        });
+
+        // BSOD Function
+        function triggerBSOD() {
+            bsod.style.display = 'block';
+            let p = 0;
+            const interval = setInterval(() => {
+                p++;
+                percentSpan.innerText = p;
+                if(p >= 100) clearInterval(interval);
+            }, 500); // Slow progress to annoy user
+        }
+
+        // Reset BSOD
+        bsod.addEventListener('click', () => {
+            bsod.style.display = 'none';
+            percentSpan.innerText = '0';
+        });
+
+        // Add random movement to numbers to make it look "Alive"
+        setInterval(() => {
+            document.querySelectorAll('.big-number').forEach(el => {
+                if(!el.innerText.includes('$') && !el.innerText.includes('%')) {
+                   // Randomize simple numbers
+                   let current = parseInt(el.innerText.replace(/,/g, ''));
+                   let change = Math.floor(Math.random() * 100) - 50;
+                   el.innerText = (current + change).toLocaleString();
+                }
+            });
+        }, 2000);
+
+    </script>
+</body>
+</html>
